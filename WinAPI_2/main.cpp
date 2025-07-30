@@ -1,32 +1,13 @@
 ﻿#include<Windows.h>
 #include"resource.h"
 
-BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam); //прототип функции процедуры окна
-//#define MESSAGE_BOX
+BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messagebox
-//Документация для изучения
 
-INT WINAPI WinMain(HINSTANCE hInstasce, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow) //обязательная основа
+INT WINAPI WinMain(HINSTANCE hInstasce, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
 
-#ifdef MESSAGE_BOX
-	MessageBox
-	(
-		NULL,
-		"Привет WinAPI\n Это самое простое окно - окно сообщения\t\t\t\t(MessageBox)",  //текст сообщения в окне
-		"Привет!",																		//навние в заголовке окна
-		MB_ABORTRETRYIGNORE | MB_ICONINFORMATION | MB_HELP								//Кнопки
-		| MB_DEFBUTTON3																	//установка кнопки по умолчанию
-		| MB_TOPMOST																	//Расположение окна (модальность)
-	);
 
-	/* MB_ - MessageBox
-	 Венгерская нотация (Hungarian notation) — соглашение об
-	 именовании переменных, констант и прочих идентификаторов
-	 в коде программ. Суть — в использовании префиксов, которые
-	 обозначают тип данных или назначение идентификатора. */
-#endif // MESSAGE_BOX
 
 	DialogBoxParam(hInstasce, MAKEINTRESOURCE(IDD_DIALOG1), NULL, (DLGPROC)DlgProc, 0);
 	//если есть ошибка 'DlgProc', то прописать (DLGPROC)DlgProc.
@@ -34,16 +15,44 @@ INT WINAPI WinMain(HINSTANCE hInstasce, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	return 0;
 }
 
-BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)				//реализация
+BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
-	case WM_INITDIALOG:						//выполняется один раз - при запуске окна
-		break;
+	case WM_INITDIALOG:
+	{																						//
+		HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);									//
+		SendMessage(hEditLogin, WM_SETTEXT, 0, (LPARAM)"Введите имя пользователя");			//
+		break;																				//
+	}																						//
+	break;
 
-	case WM_COMMAND:						//обрабатывает нажатие кнопок, перемещения мыши и т.д.
+	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
+		case IDC_EDIT_LOGIN:																
+			if (HIWORD(wParam) == EN_SETFOCUS)												
+			{																				
+				HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);							
+				CHAR sz_buffer[256];														
+				SendMessage(hEditLogin, WM_GETTEXT, 256, (LPARAM)sz_buffer);				
+				if (strcmp(sz_buffer, "Введите имя пользователя") == 0)						
+				{																			
+					SendMessage(hEditLogin, WM_SETTEXT, 0, (LPARAM)"");						
+				}																			
+			}																				
+			else if (HIWORD(wParam) == EN_KILLFOCUS)
+			{
+				HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
+				CHAR sz_buffer[256];
+				SendMessage(hEditLogin, WM_GETTEXT, 256, (LPARAM)sz_buffer);
+				if (strlen(sz_buffer) == 0)
+				{
+					SendMessage(hEditLogin, WM_SETTEXT, 0, (LPARAM)"Введите имя пользователя");
+				}
+			}
+			break;																				
+
 		case IDC_BUTTON_COPY:
 		{
 			HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
@@ -65,7 +74,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)				//�
 		}
 		break;
 
-	case WM_CLOSE:							//отрабатывает при нажатии на кнопку "Закрыть Х"
+	case WM_CLOSE:
 		EndDialog(hwnd, 0);
 		break;
 	}
