@@ -10,7 +10,7 @@ INT WINAPI WinMain(HINSTANCE hInstasce, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 
 
 	DialogBoxParam(hInstasce, MAKEINTRESOURCE(IDD_DIALOG1), NULL, (DLGPROC)DlgProc, 0);
-	//если есть ошибка 'DlgProc', то прописать (DLGPROC)DlgProc.
+	
 
 	return 0;
 }
@@ -20,11 +20,11 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
-	{																						//
-		HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);									//
-		SendMessage(hEditLogin, WM_SETTEXT, 0, (LPARAM)"Введите имя пользователя");			//
-		break;																				//
-	}																						//
+	{																						
+		HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);									
+		SendMessage(hEditLogin, WM_SETTEXT, 0, (LPARAM)"Введите имя пользователя");			
+		break;																				
+	}																						
 	break;
 
 	case WM_COMMAND:
