@@ -21,7 +21,6 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 	{
 		HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
-		//GetModuleHandle(NULL) - возвращает hInstance нашего *.ехе-файла
 		SendMessage(hwnd, WM_SETICON, 0, (LPARAM)hIcon);
 
 		HWND hCombo = GetDlgItem(hwnd, IDC_COMBO);
@@ -38,9 +37,6 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 		case IDOK:
 		{
-			//A - ANSI ASCII;
-			//W - Wide CHAR;
-
 			CONST INT SIZE = 256;
 			CHAR sz_buffer[SIZE] = {};
 			CHAR sz_message[SIZE] = {};
@@ -48,17 +44,8 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			INT i = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
 			SendMessage(hCombo, CB_GETLBTEXT, i, (LPARAM)sz_buffer);
 			if (i == -1)strcpy(sz_message, "Выберите Ваш вариант: ");
-			//strcat(dst, src); dst - строка получатель; src - строка источник;
 			else
 				sprintf(sz_message, "Вы выбрали пункт № %i со значением '%s'", i, sz_buffer);
-			//sz_message - эта строка будет содержать результат форматирования;
-			//"Вы выбрали...." - эта строка содержит формат, в ней указывается 
-			//куда именно нужно вставить значения, идущие после этой строки, 
-			//в данном случае это "i" и "sz_buffer";
-			//sprintf() - это функция с произвольным числом параметров;
-			//Спецификатор '%i' - заменяется целочисленным значением;
-			//Спецификатор '%s' - заменяется строкой;
-			//Спецификатор '%e' - дробное число;
 			
 			MessageBox(hwnd, sz_message, "Info", MB_OK | MB_ICONINFORMATION);
 		}
