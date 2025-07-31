@@ -60,7 +60,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
     case WM_INITDIALOG:
     {
-        HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
+        HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
         SendMessage(hwnd, WM_SETICON, 0, (LPARAM)hIcon);
 
         HWND hList = GetDlgItem(hwnd, IDC_LIST);
