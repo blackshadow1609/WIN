@@ -4,8 +4,8 @@
 //
 #define IDD_DIALOG_MAIN                 101
 #define IDI_ICON                        103
-#define IDD_DIALOG1                     104
 #define IDD_DIALOG_INPUT                104
+#define IDC_EDIT						106
 #define IDC_ADD                         1001
 #define IDC_DELETE                      1002
 #define IDC_LIST                        1003

@@ -13,11 +13,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
     return 0;
 }
 
-// Глобальные переменные для обмена данными между диалогами
 static CHAR g_szInputBuffer[256] = {};
 static INT g_iSelectedIndex = -1;
 
-// Обработчик диалога ввода
 BOOL CALLBACK InputDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
@@ -53,7 +51,6 @@ BOOL CALLBACK InputDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return FALSE;
 }
 
-// Главный обработчик диалога
 BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
@@ -95,7 +92,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             EndDialog(hwnd, 0);
             return TRUE;
 
-        case IDC_ADD: // Кнопка "Добавить"
+        case IDC_ADD: 
         {
             g_iSelectedIndex = -1;
             g_szInputBuffer[0] = '\0';
@@ -108,7 +105,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             return TRUE;
         }
 
-        case IDC_DELETE: // Кнопка "Удалить"
+        case IDC_DELETE: 
         {
             HWND hList = GetDlgItem(hwnd, IDC_LIST);
             INT i = SendMessage(hList, LB_GETCURSEL, 0, 0);
@@ -119,9 +116,9 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             return TRUE;
         }
 
-        case IDC_LIST: // Обработка ListBox
+        case IDC_LIST: 
         {
-            if (HIWORD(wParam) == LBN_DBLCLK) // Двойной клик по элементу
+            if (HIWORD(wParam) == LBN_DBLCLK) 
             {
                 HWND hList = GetDlgItem(hwnd, IDC_LIST);
                 g_iSelectedIndex = SendMessage(hList, LB_GETCURSEL, 0, 0);
