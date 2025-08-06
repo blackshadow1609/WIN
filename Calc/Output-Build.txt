@@ -1,0 +1,5 @@
+﻿Build started at 19:16...
+1>------ Build started: Project: Calc, Configuration: Debug x64 ------
+1>Calc.vcxproj -> C:\Users\wwwbl\source\repos\WinAPI_2\x64\Debug\Calc.exe
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
+========== Build completed at 19:16 and took 00,182 seconds ==========
