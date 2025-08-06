@@ -12,6 +12,7 @@ CONST INT g_i_BUTTON_SIZE = 50;
 CONST INT g_i_INTERVAL = 1;
 CONST INT g_i_BUTTON_SPACE = g_i_BUTTON_SIZE + g_i_INTERVAL;
 CONST INT g_i_BUTTON_SPACE_DOUBLE = (g_i_BUTTON_SIZE + g_i_INTERVAL) * 2;
+
 CONST INT g_i_BUTTON_SIZE_DOUBLE = g_i_BUTTON_SIZE * 2 + g_i_INTERVAL;
 CONST INT g_i_START_X = 10;
 CONST INT g_i_START_Y = 10;
@@ -19,6 +20,8 @@ CONST INT g_i_DISPLAY_HEIGHT = 22;
 CONST INT g_i_DISPLAY_WIDTH = g_i_BUTTON_SIZE * 5 + g_i_INTERVAL * 4;
 CONST INT g_i_BUTTON_START_X = g_i_START_X;
 CONST INT g_i_BUTTON_START_Y = g_i_START_Y + g_i_DISPLAY_HEIGHT + g_i_INTERVAL;
+
+CONST INT g_SIZE = 256;
 
 INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -92,7 +95,9 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HWND hEditDisplay = CreateWindowEx
 		(
 			NULL, "Edit", "0",
-			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT,
+			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT,	//WS_VISIBLE - делает кнопку видимой
+															//WS_CHILD - указывает, что это дочернее окно
+															//BS_PUSHBUTTON - стандартный стиль кнопки
 			g_i_BUTTON_START_X, g_i_START_Y,
 			g_i_DISPLAY_WIDTH, g_i_DISPLAY_HEIGHT,
 			hwnd,
@@ -180,12 +185,25 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 		break;
 	case WM_COMMAND:										//WM_COMMAND — сообщение в Windows, которое посылается окну в ответ 
-															//на действия пользователя или события, происходящие в элементах управления. 
+	{														//на действия пользователя или события, происходящие в элементах управления. 
+		CHAR szDisplay[g_SIZE] = {};
+		CHAR szDigit[2] = {};
+		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
+		{
+			szDigit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
+			SendMessage(hEditDisplay, WM_GETTEXT, g_SIZE, (LPARAM)szDisplay);
+			if (szDisplay[0] == '0' && szDisplay[1] != '.')szDisplay[0] == 0;
+			strcat(szDisplay, szDigit);
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)szDisplay);
+		}
+	}
 		break;
 	case WM_DESTROY:										//WM_DESTROY — сообщение, которое отправляется в оконную процедуру 
 															//при уничтожении окна.
 		PostQuitMessage(0);
 		break;
+
 	case WM_CLOSE:											//WM_CLOSE — сообщение в приложениях Windows, 
 															//которое сигнализирует о закрытии окна или приложения. 
 
