@@ -2,6 +2,10 @@
 #include<stdio.h>
 #include"resource.h"
 
+#define IDC_STATIC		1000
+#define IDC_EDIT		1001
+#define IDC_BUTTON		1002
+
 CONST CHAR g_sz_CLASS_NAME[] = "My First Window";	//Абсолютно у любого класса окна есть имя.
 													//Имя класса окна - это самая обычная строка.
 
@@ -63,6 +67,8 @@ INT WINAPI WinMain(HINSTANCE hInstasce, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		g_sz_CLASS_NAME,				//WindowName (Title) - эта строка отображается в заголовке окна
 		WS_OVERLAPPEDWINDOW,			//Такой стиль задается для всех главных окон. 
 										//Это окно будет родительским для других окон приложения.
+										//WS_CHILD | WS_VISIBLE(писать всегда!)
+
 		window_start_x, window_start_y,	//Position. Позиция окна
 		window_width, window_height,	//Size. Размер окна
 		NULL,							//ParentWindow  
@@ -87,7 +93,7 @@ INT WINAPI WinMain(HINSTANCE hInstasce, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		DispatchMessage(&msg);
 	}
 							
-	return msg.message;
+	return msg.wParam;
 }
 
 INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -95,6 +101,45 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 	case WM_CREATE:
+		//A - ANSI ASCII
+		//W - Wide encoding (Unicode - w_char_t)
+		CreateWindowEx
+		(
+			NULL,
+			"Static",
+			"Этот StaticText Создан при помощи функции CreateWindowEx()",
+			//WS_ - WindowStyle
+			WS_CHILD | WS_VISIBLE,
+			10, 10,
+			550, 25,
+			hwnd, 
+			(HMENU) IDC_STATIC,					//ResourceID
+			GetModuleHandle(NULL),			//hInstance
+			NULL
+		);
+		CreateWindowEx
+		(
+			NULL, "Edit", "",
+			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_CENTER,
+			10, 50,
+			550, 22,
+			hwnd,
+			(HMENU) IDC_EDIT,
+			GetModuleHandle(NULL),
+			NULL
+		);
+		CreateWindowEx
+		(
+			NULL, "Button", "Применить",
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+			450, 75,
+			110, 25,
+			hwnd,
+			(HMENU) IDC_BUTTON,
+			GetModuleHandle(NULL),
+			NULL
+		);
+
 		break;
 
 	case WM_MOVE:
@@ -120,6 +165,20 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDC_BUTTON:
+		{
+			HWND hEdit = GetDlgItem(hwnd, 1001);
+			HWND hStatic = GetDlgItem(hwnd, 1000);
+			CONST INT SIZE = 1024;
+			CHAR sz_buffer[SIZE] = {};				//sz_ String Zero (NULL - Terminate Line)
+			SendMessage(hEdit, WM_GETTEXT, SIZE, (LPARAM)sz_buffer);
+			SendMessage(hStatic, WM_SETTEXT, 0, (LPARAM)sz_buffer);
+			SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)sz_buffer);
+		}
+			break;
+		}
 		break;
 
 	case WM_DESTROY:
