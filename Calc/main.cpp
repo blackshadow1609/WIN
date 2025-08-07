@@ -1,4 +1,5 @@
 ﻿#include<Windows.h>
+#include<float.h>
 #include"resource.h"
 
 CONST CHAR g_sz_CLASS_NAME[] = "MyCalc";
@@ -89,6 +90,12 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 
 INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	static DOUBLE a = DBL_MIN;
+	static DOUBLE b = DBL_MIN;
+	static CHAR operation = 0;
+	static BOOL input = FALSE;
+	static BOOL input_operation = FALSE;
+
 	switch (uMsg)
 	{
 	case WM_CREATE:											//WM_CREATE — идентификатор сообщения в Windows API, 
@@ -204,6 +211,34 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if (szDigit[0] == '.' && strchr(szDisplay, '.')) break;
 			strcat(szDisplay, szDigit);
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)szDisplay);
+			input = TRUE;
+		}
+		if (LOWORD(wParam) >= IDC_BUTTON_PLUS && LOWORD(wParam) <= IDC_BUTTON_SLASH)
+		{
+			SendMessage(hEditDisplay, WM_GETTEXT, g_SIZE, (LPARAM)szDisplay);
+			//if (input && a == DBL_MIN) a = atof(szDisplay);
+			//else b = atof(szDisplay);
+			(input && a == DBL_MIN ? a : b) = atof(szDisplay);
+			input = FALSE;
+			SendMessage(hwnd, WM_COMMAND, (WPARAM)operation, 0);
+			operation = wParam;
+			input_operation = TRUE;
+		}
+		if (LOWORD(wParam) >= IDC_BUTTON_EQUAL)
+		{
+			SendMessage(hEditDisplay, WM_GETTEXT, g_SIZE, (LPARAM)szDisplay);
+			//if (input && a == DBL_MIN) a = atof(szDisplay);
+			//else b = atof(szDisplay);
+			(input && a == DBL_MIN ? a : b) = atof(szDisplay);
+			input = FALSE;
+			switch (operation)
+			{
+			case IDC_BUTTON_PLUS:	a += b;	break;
+			case IDC_BUTTON_MINUS:	a -= b;	break;
+			case IDC_BUTTON_ASTER:	a *= b;	break;
+			case IDC_BUTTON_SLASH:	a /= b;	break;
+			}
+			input_operation = FALSE;
 		}
 	}
 		break;
