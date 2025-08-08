@@ -8,11 +8,9 @@ CONST CHAR g_sz_CLASS_NAME[] = "MyCalc";
 CONST CHAR* g_sz_OPERATIONS[] = { "+", "-", "*", "/" };
 CONST CHAR* g_sz_EDIT[] = { "<-", "C", "=" };
 
-//g_i_ - Global Integer
 CONST INT g_i_BUTTON_SIZE = 50;
 CONST INT g_i_INTERVAL = 1;
 CONST INT g_i_BUTTON_SPACE = g_i_BUTTON_SIZE + g_i_INTERVAL;
-//CONST INT g_i_BUTTON_SPACE_DOUBLE = (g_i_BUTTON_SIZE + g_i_INTERVAL) * 2;
 
 CONST INT g_i_BUTTON_SIZE_DOUBLE = g_i_BUTTON_SIZE * 2 + g_i_INTERVAL;
 CONST INT g_i_START_X = 10;
@@ -62,7 +60,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		NULL,
 		g_sz_CLASS_NAME,
 		g_sz_CLASS_NAME,
-		//WS_OVERLAPPED | WS_SYSMENU /*| WS_THICKFRAME*/ | WS_MINIMIZEBOX /*| WS_MAXIMIZEBOX*/,
 		WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		g_i_WINDOW_WIDTH, g_i_WINDOW_HEIGHT,
@@ -71,8 +68,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		hInstance,
 		NULL
 	);
-	ShowWindow(hwnd, nCmdShow);	//https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow
-	UpdateWindow(hwnd);			//			taskkill /f /im  calc.exe
+	ShowWindow(hwnd, nCmdShow);	
+	UpdateWindow(hwnd);			
 	
 	//3) Запуск цикла сообщений:
 	MSG msg;
@@ -89,8 +86,8 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	static DOUBLE a = DBL_MIN;
 	static DOUBLE b = DBL_MIN;
 	static INT operation = 0;
-	static BOOL input = FALSE;				//Пользователь ввел число
-	static BOOL input_operation = FALSE;	//Пользователь ввел знак операции
+	static BOOL input = FALSE;				
+	static BOOL input_operation = FALSE;	
 
 	switch (uMsg)
 	{
@@ -152,7 +149,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -198,12 +195,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hEditDisplay, WM_GETTEXT, g_SIZE, (LPARAM)szDisplay);
 			if (szDisplay[0] == '0' && szDisplay[1] != '.')szDisplay[0] = 0;
 			if (szDigit[0] == '.' && strchr(szDisplay, '.'))break;
-			//https://legacy.cplusplus.com/reference/cstring/strchr/
-			//Функция strchr() выполняет поиск символа в строке.
-			//Если символ найден, то strchr() возвращает указатель на найденный символ,
-			//в противном случае возвращает 'nullptr' (физический 0);
-			//0 - это ''false;
-			//true - это все что НЕ 0;
 			strcat(szDisplay, szDigit);
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)szDisplay);
 			input = TRUE;
@@ -211,14 +202,11 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (LOWORD(wParam) >= IDC_BUTTON_PLUS && LOWORD(wParam) <= IDC_BUTTON_SLASH)
 		{
 			SendMessage(hEditDisplay, WM_GETTEXT, g_SIZE, (LPARAM)szDisplay);
-			if (input && a == DBL_MIN)a = atof(szDisplay);	//https://legacy.cplusplus.com/reference/cstdlib/atof/
+			if (input && a == DBL_MIN)a = atof(szDisplay);	
 			if (input)b = atof(szDisplay);
-			//else break;
-			//(input && a == DBL_MIN ? a : b) = atof(szDisplay);
 			input = FALSE;
-			//SendMessage(hwnd, WM_COMMAND, (WPARAM)operation, 0);	//выполняем предыдущую операцию
-			SendMessage(hwnd, WM_COMMAND, IDC_BUTTON_EQUAL, 0);	//выполняем предыдущую операцию
-			operation = LOWORD(wParam);		//и только после этого запоминаем введенную операцию
+			SendMessage(hwnd, WM_COMMAND, IDC_BUTTON_EQUAL, 0);	
+			operation = LOWORD(wParam);		
 			input_operation = TRUE;
 		}
 		if (LOWORD(wParam) == IDC_BUTTON_BSP)
@@ -238,10 +226,9 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (LOWORD(wParam) == IDC_BUTTON_EQUAL)
 		{
 			SendMessage(hEditDisplay, WM_GETTEXT, g_SIZE, (LPARAM)szDisplay);
-			if (input && a == DBL_MIN)a = atof(szDisplay);	//https://legacy.cplusplus.com/reference/cstdlib/atof/
+			if (input && a == DBL_MIN)a = atof(szDisplay);	
 			if (input) b = atof(szDisplay);
 			if (a == DBL_MIN) break;
-			//(input && a == DBL_MIN ? a : b) = atof(szDisplay);
 			input = FALSE;
 			switch (operation)
 			{
