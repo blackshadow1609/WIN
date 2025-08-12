@@ -129,7 +129,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CreateWindowEx
 		(
 			NULL, "Button", "0",
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			g_i_BUTTON_START_X, g_i_BUTTON_START_Y + (g_i_BUTTON_SPACE) * 3,
 			g_i_BUTTON_SIZE_DOUBLE, g_i_BUTTON_SIZE,
 			hwnd,
@@ -182,13 +182,13 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			);
 		}
 		//HICON hIcon = LoadIcon(GetModuleHandle(NULL), "ICO\\palm.ico");
-		HICON hIcon = LoadIcon(GetModuleHandle(NULL), "BMP\\0.bmp");
+		HICON hIcon = (HICON)LoadImage(GetModuleHandle(NULL), "ICO\\palm.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
 		//GetLastError();
-		CHAR sz_error[32] = "";
-		sprintf(sz_error, "%i", GetLastError());
-		MessageBox(hwnd, sz_error, "", MB_OK);
+		//CHAR sz_error[32] = "";
+		//sprintf(sz_error, "%i", GetLastError());
+		//MessageBox(hwnd, sz_error, "", MB_OK);
 		SendMessage(hwnd, WM_SETICON, 0, (LPARAM)hIcon);
-		SendMessage(GetDlgItem(hwnd, IDC_BUTTON_0), BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hIcon);
+		SendMessage(GetDlgItem(hwnd, IDC_BUTTON_0), BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIcon);
 	}
 	break;
 	case WM_COMMAND:
