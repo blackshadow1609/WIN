@@ -99,7 +99,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		AllocConsole();
 		freopen("CONOUT$", "w", stdout);
-		//setlocale(LC_ALL, "");
 		system("CHCP 1251");
 
 		HWND hEditDisplay = CreateWindowEx
@@ -149,7 +148,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CreateWindowEx
 		(
 			NULL, "Button", ".",
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
 			g_i_BUTTON_START_X + g_i_BUTTON_SPACE * 2,
 			g_i_BUTTON_START_Y + g_i_BUTTON_SPACE * 3,
 			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
@@ -165,7 +164,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CreateWindowEx
 			(
 				NULL, "Button", g_sz_OPERATIONS[i],
-				WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+				WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
 				g_i_BUTTON_START_X + g_i_BUTTON_SPACE * 3,
 				g_i_BUTTON_START_Y + g_i_BUTTON_SPACE * (3 - i),
 				g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
@@ -180,7 +179,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CreateWindowEx
 			(
 				NULL, "Button", g_sz_EDIT[i],
-				WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+				WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
 				g_i_BUTTON_START_X + g_i_BUTTON_SPACE * 4,
 				g_i_BUTTON_START_Y + g_i_BUTTON_SPACE * i,
 				g_i_BUTTON_SIZE, i < 2 ? g_i_BUTTON_SIZE : g_i_BUTTON_SIZE_DOUBLE,
@@ -190,14 +189,8 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				NULL
 			);
 		}
-		//HICON hIcon = LoadIcon(GetModuleHandle(NULL), "ICO\\palm.ico");
 		HICON hIcon = (HICON)LoadImage(GetModuleHandle(NULL), "BMP\\0.bmp", IMAGE_BITMAP, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
-		//GetLastError();
-		//CHAR sz_error[32] = "";
-		//sprintf(sz_error, "%i", GetLastError());
-		//MessageBox(hwnd, sz_error, "", MB_OK);
-		//SendMessage(hwnd, WM_SETICON, 0, (LPARAM)hIcon);
-		//SendMessage(GetDlgItem(hwnd, IDC_BUTTON_0), BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hIcon);
+	
 		SetSkin(hwnd, "square_blue");
 	}
 	break;
@@ -387,7 +380,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 LPSTR FormatLastError(DWORD dwErrorID)
 {
-	//DWORD dwErrorID = GetLastError();
 	LPSTR lpszMessage = NULL;
 	FormatMessage
 	(
@@ -411,6 +403,7 @@ VOID SetSkin(HWND hwnd, CONST CHAR sz_skin[])
 {
 	std::cout << "SetSkin()" << std::endl;
 	CHAR sz_filename[FILENAME_MAX] = {};
+
 	for (int i = 0; i <= 9; i++)
 	{
 		sprintf(sz_filename, "BMP\\%s\\button_%i.bmp", sz_skin, i);
@@ -424,8 +417,60 @@ VOID SetSkin(HWND hwnd, CONST CHAR sz_skin[])
 			LR_LOADFROMFILE
 		);
 		PrintLastError(GetLastError());
-		//MessageBox(hwnd, lpszMessage, "", MB_OK);
 		SendMessage(GetDlgItem(hwnd, IDC_BUTTON_0 + i), BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpIcon);
 	}
+
+	sprintf(sz_filename, "BMP\\%s\\button_point.bmp", sz_skin);
+	HBITMAP bmpPoint = (HBITMAP)LoadImage
+	(
+		GetModuleHandle(NULL),
+		sz_filename,
+		IMAGE_BITMAP,
+		g_i_BUTTON_SIZE,
+		g_i_BUTTON_SIZE,
+		LR_LOADFROMFILE
+	);
+	PrintLastError(GetLastError());
+	SendMessage(GetDlgItem(hwnd, IDC_BUTTON_POINT), BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpPoint);
+
+	CONST INT operation_buttons[] = { IDC_BUTTON_PLUS, IDC_BUTTON_MINUS, IDC_BUTTON_ASTER, IDC_BUTTON_SLASH };
+	CONST CHAR* operation_files[] = { "button_plus", "button_minus", "button_aster", "button_slash" };
+
+	for (int i = 0; i < 4; i++)
+	{
+		sprintf(sz_filename, "BMP\\%s\\%s.bmp", sz_skin, operation_files[i]);
+		HBITMAP bmpOp = (HBITMAP)LoadImage
+		(
+			GetModuleHandle(NULL),
+			sz_filename,
+			IMAGE_BITMAP,
+			g_i_BUTTON_SIZE,
+			g_i_BUTTON_SIZE,
+			LR_LOADFROMFILE
+		);
+		PrintLastError(GetLastError());
+		SendMessage(GetDlgItem(hwnd, operation_buttons[i]), BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpOp);
+	}
+
+	CONST INT control_buttons[] = { IDC_BUTTON_BSP, IDC_BUTTON_CLR, IDC_BUTTON_EQUAL };
+	CONST CHAR* control_files[] = { "button_bsp", "button_clr", "button_equal" };
+	CONST INT control_sizes[] = { g_i_BUTTON_SIZE, g_i_BUTTON_SIZE, g_i_BUTTON_SIZE_DOUBLE };
+
+	for (int i = 0; i < 3; i++)
+	{
+		sprintf(sz_filename, "BMP\\%s\\%s.bmp", sz_skin, control_files[i]);
+		HBITMAP bmpCtrl = (HBITMAP)LoadImage
+		(
+			GetModuleHandle(NULL),
+			sz_filename,
+			IMAGE_BITMAP,
+			control_sizes[i],
+			g_i_BUTTON_SIZE,
+			LR_LOADFROMFILE
+		);
+		PrintLastError(GetLastError());
+		SendMessage(GetDlgItem(hwnd, control_buttons[i]), BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpCtrl);
+	}
+
 	std::cout << delimiter << std::endl;
 }
