@@ -10,7 +10,7 @@ CONST CHAR g_sz_CLASS_NAME[] = "MyCalc";
 
 CONST CHAR* g_sz_OPERATIONS[] = { "+", "-", "*", "/" };
 CONST CHAR* g_sz_EDIT[] = { "<-", "C", "=" };
-CONST CHAR* g_sz_BUTTON_FILENAMES[] = {"point", "plus", "minus", "aster", "slash", "bsp", "clr", "equal"};
+CONST CHAR* g_sz_BUTTON_FILENAMES[] = { "point", "plus", "minus", "aster", "slash", "bsp", "clr", "equal" };
 
 CONST INT g_i_BUTTON_SIZE = 50;
 CONST INT g_i_INTERVAL = 1;
@@ -106,7 +106,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HWND hEditDisplay = CreateWindowEx
 		(
 			NULL, "Edit", "0",
-			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT,
+			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT | ES_NOHIDESEL,
 			g_i_BUTTON_START_X, g_i_START_Y,
 			g_i_DISPLAY_WIDTH, g_i_DISPLAY_HEIGHT,
 			hwnd,
@@ -209,13 +209,13 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			);
 		}
 		HICON hIcon = (HICON)LoadImage(GetModuleHandle(NULL), "BMP\\0.bmp", IMAGE_BITMAP, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
-		
+
 		//SetSkin(hwnd, "square_blue");
 		//SetSkin(hwnd, "metal_mistral");
 		SetSkinFromDLL(hwnd, "metal_mistral");
 		//SetSkinFromDLL(hwnd, "square_blue");
 
-		
+
 	}
 	break;
 	case WM_COMMAND:
@@ -391,6 +391,24 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 
+	case WM_CONTEXTMENU:
+	{
+		HMENU hMainMenu = CreatePopupMenu();
+		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_STRING, CM_EXIT, "Exit");
+		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
+		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_STRING, CM_SQUARE_BLUE, "Square Blue");
+		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_STRING, CM_METAL_MISTRAL, "Metall Mistral");
+
+		BOOL item = TrackPopupMenuEx(hMainMenu, TPM_RETURNCMD | TPM_RIGHTALIGN | TPM_BOTTOMALIGN, LOWORD(lParam), HIWORD(lParam), hwnd, NULL);
+
+		switch (item)
+		{
+		case CM_SQUARE_BLUE: SetSkinFromDLL(hwnd, "square_blue"); break;
+		case CM_METAL_MISTRAL: SetSkinFromDLL(hwnd, "metal_mistral"); break;
+		}
+	}
+	break;
+
 	case WM_DESTROY:
 		FreeConsole();
 		PostQuitMessage(0);
@@ -460,7 +478,7 @@ VOID SetSkin(HWND hwnd, CONST CHAR sz_skin[])
 }
 VOID SetSkinFromDLL(HWND hwnd, CONST CHAR sz_skin[])
 {
-	HMODULE hButtonsModule =  LoadLibrary(sz_skin);
+	HMODULE hButtonsModule = LoadLibrary(sz_skin);
 	//HINSTANCE hButtons = GetModuleHandle("Buttons.dll");
 	for (int i = IDC_BUTTON_0; i <= IDC_BUTTON_EQUAL; i++)
 	{
