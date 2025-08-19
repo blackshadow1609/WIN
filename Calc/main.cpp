@@ -198,19 +198,20 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 
-	case WM_CTLCOLOREDIT:
-	{
-		HDC hdcEdit = (HDC)wParam;
-		SetBkColor(hdcEdit, g_DISPLAY_BACKGROUND[index]);
-		SetTextColor(hdcEdit, g_DISPLAY_FOREGROUND[index]);
-
-		HBRUSH hbrBackground = CreateSolidBrush(g_WINDOW_BACKGROUND[index]);
-		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG)hbrBackground);
-		SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
-		RedrawWindow(hwnd, NULL, NULL, RDW_ERASE);
-		return (LRESULT)hbrBackground;
-	}
-	break;
+	//case WM_CTLCOLOREDIT:
+	//{
+	//	HDC hdcEdit = (HDC)wParam;
+	//	SetBkMode(hdcEdit, OPAQUE);
+	//	SetBkColor(hdcEdit, g_DISPLAY_BACKGROUND[index]);
+	//	SetTextColor(hdcEdit, g_DISPLAY_FOREGROUND[index]);
+	//
+	//	HBRUSH hbrBackground = CreateSolidBrush(g_WINDOW_BACKGROUND[index]);
+	//	SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG)hbrBackground);
+	//	SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
+	//	RedrawWindow(hwnd, NULL, NULL, RDW_ERASE);
+	//	return (LRESULT)hbrBackground;
+	//}
+	//break;
 
 	case WM_COMMAND:
 	{
@@ -392,9 +393,17 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_STRING, CM_EXIT, "Exit");
 		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
 		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_STRING, CM_SQUARE_BLUE, "Square Blue");
-		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_STRING, CM_METAL_MISTRAL, "Metall Mistral");
+		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_STRING, CM_METAL_MISTRAL, "Metal Mistral");
 
-		BOOL item = TrackPopupMenuEx(hMainMenu, TPM_RETURNCMD | TPM_RIGHTALIGN | TPM_BOTTOMALIGN, LOWORD(lParam), HIWORD(lParam), hwnd, NULL);
+		BOOL item = TrackPopupMenuEx
+		(
+			hMainMenu, 
+			TPM_RETURNCMD | TPM_RIGHTALIGN | TPM_BOTTOMALIGN,
+			LOWORD(lParam), 
+			HIWORD(lParam), 
+			hwnd, 
+			NULL
+		);
 
 		switch (item)
 		{
@@ -405,10 +414,11 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		DestroyMenu(hMainMenu);
 
-		if (item >= 201 && item <= 210)
+		//if (item >= 201 && item <= 210)
 		{
 			index = item - CM_SQUARE_BLUE;
 			//SetSkin(hwnd, g_sz_SKIN[index]);
+			SetSkinFromDLL(hwnd, g_sz_SKIN[index]);
 
 			HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
 			HDC hdcEditDisplay = GetDC(hEditDisplay);
@@ -416,11 +426,10 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			ReleaseDC(hEditDisplay, hdcEditDisplay);
 
 			CHAR sz_buffer[g_SIZE] = {};
+			//sprintf(sz_buffer, "%i", item);
 			SendMessage(hwnd, WM_GETTEXT, g_SIZE, (LPARAM)sz_buffer);
-			SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)"");
 			SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)sz_buffer);
-			SetFocus(hEditDisplay);
-			SetSkinFromDLL(hwnd, g_sz_SKIN[index]);
+			//SetFocus(hEditDisplay);
 
 		}
 	}
