@@ -9,6 +9,9 @@
 INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 VOID SetSkin(HWND hwnd, CONST CHAR sz_skin[]);
 VOID SetSkinFromDLL(HWND hwnd, CONST CHAR sz_skin[]);
+VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID);
+VOID LoadFontsFromDLL(HMODULE hFontModule);
+VOID SetFont(HWND hwnd, CONST CHAR font_name[]);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -73,6 +76,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	static BOOL input_operation = FALSE;
 
 	static INT index = 0;
+	static INT font_index = 0;
 
 	switch (uMsg)
 	{
@@ -93,7 +97,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
-		AddFontResourceEx("Fonts\\digital-7 (mono).ttf", FR_PRIVATE, 0);
+		/*AddFontResourceEx("Fonts\\digital-7 (mono).ttf", FR_PRIVATE, 0);
 		HFONT hFont = CreateFont
 		(
 			g_i_DISPLAY_HEIGHT - 2, g_i_DISPLAY_HEIGHT / 3,
@@ -108,7 +112,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			FF_DONTCARE,
 			"digital-7 mono"
 		);
-		SendMessage(hEditDisplay, WM_SETFONT, (WPARAM)hFont, TRUE);
+		SendMessage(hEditDisplay, WM_SETFONT, (WPARAM)hFont, TRUE);*/
 
 		INT iDigit = IDC_BUTTON_1;
 		CHAR szDigit[2] = {};
@@ -189,29 +193,28 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		HICON hIcon = (HICON)LoadImage(GetModuleHandle(NULL), "BMP\\0.bmp", IMAGE_BITMAP, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
 
-		//SetSkin(hwnd, "square_blue");
 		//SetSkin(hwnd, "metal_mistral");
-		//SetSkinFromDLL(hwnd, "metal_mistral");
 		SetSkinFromDLL(hwnd, "square_blue");
-
-
+		HMODULE hFonts = LoadLibrary("Fonts.DLL");
+		LoadFontsFromDLL(hFonts);
+		SetFont(hwnd, g_sz_FONT[font_index]);
 	}
 	break;
 
-	//case WM_CTLCOLOREDIT:
-	//{
-	//	HDC hdcEdit = (HDC)wParam;
-	//	SetBkMode(hdcEdit, OPAQUE);
-	//	SetBkColor(hdcEdit, g_DISPLAY_BACKGROUND[index]);
-	//	SetTextColor(hdcEdit, g_DISPLAY_FOREGROUND[index]);
-	//
-	//	HBRUSH hbrBackground = CreateSolidBrush(g_WINDOW_BACKGROUND[index]);
-	//	SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG)hbrBackground);
-	//	SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
-	//	RedrawWindow(hwnd, NULL, NULL, RDW_ERASE);
-	//	return (LRESULT)hbrBackground;
-	//}
-	//break;
+	case WM_CTLCOLOREDIT:
+	{
+		HDC hdcEdit = (HDC)wParam;
+		SetBkMode(hdcEdit, OPAQUE);
+		SetTextColor(hdcEdit, g_DISPLAY_FOREGROUND[index]);
+		SetBkColor(hdcEdit, g_DISPLAY_BACKGROUND[index]);
+	
+		HBRUSH hbrBackground = CreateSolidBrush(g_WINDOW_BACKGROUND[index]);
+		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG)hbrBackground);
+		SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
+		RedrawWindow(hwnd, NULL, NULL, RDW_ERASE);
+		return (LRESULT)hbrBackground;
+	}
+	break;
 
 	case WM_COMMAND:
 	{
@@ -278,6 +281,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		//if (LOWORD(wParam) == IDC_EDIT_DISPLAY && HIWORD(wParam) == EN_SETFOCUS)
 		SetFocus(hwnd);
+
 	}
 	break;
 
@@ -414,9 +418,9 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		DestroyMenu(hMainMenu);
 
-		//if (item >= 201 && item <= 210)
+		if (item >= 201 && item <= 210)
 		{
-			index = item - CM_SQUARE_BLUE;
+			index = item - CM_EXIT - 1;
 			//SetSkin(hwnd, g_sz_SKIN[index]);
 			SetSkinFromDLL(hwnd, g_sz_SKIN[index]);
 
@@ -521,4 +525,40 @@ VOID SetSkinFromDLL(HWND hwnd, CONST CHAR sz_skin[])
 		SendMessage(GetDlgItem(hwnd, i), BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton);
 	}
 	FreeLibrary(hButtonsModule);
+}
+VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID)
+{
+	HRSRC hFntRes = FindResource(hFontModule, MAKEINTRESOURCE(resourceID), MAKEINTRESOURCE(RT_FONT));
+	HGLOBAL hFntMem = LoadResource(hFontModule, hFntRes);
+	VOID* fntData = LockResource(hFntMem);
+	DWORD nFonts = 0;
+	DWORD len = SizeofResource(hFontModule, hFntRes);
+	AddFontMemResourceEx(fntData, len, NULL, &nFonts);
+}
+VOID LoadFontsFromDLL(HMODULE hFontModule)
+{
+	for (int i = 301; i <= 304; i++)
+	{
+		LoadFontFromDLL(hFontModule, i);
+	}
+}
+VOID SetFont(HWND hwnd, CONST CHAR font_name[])
+{
+	HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+	//AddFontResourceEx("Fonts\\digital-7 (mono).ttf", FR_PRIVATE, 0);
+	HFONT hFont = CreateFont
+	(
+		g_i_DISPLAY_HEIGHT - 2, g_i_DISPLAY_HEIGHT / 3,
+		0,
+		0,
+		FW_BOLD,
+		FALSE, FALSE, FALSE,
+		DEFAULT_CHARSET,
+		OUT_TT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		ANTIALIASED_QUALITY,
+		FF_DONTCARE,
+		font_name
+	);
+	SendMessage(hEditDisplay, WM_SETFONT, (WPARAM)hFont, TRUE);
 }
