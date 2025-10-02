@@ -3,6 +3,7 @@
 
 #define delimiter "\n-----------------------------------------------\n"
 
+
 CONST CHAR g_sz_CLASS_NAME[] = "MyCalc";
 
 CONST CHAR* g_sz_OPERATIONS[] = { "+", "-", "*", "/" };
@@ -26,11 +27,13 @@ CONST INT g_i_WINDOW_HEIGHT = (g_i_DISPLAY_HEIGHT + g_i_INTERVAL) + g_i_BUTTON_S
 
 CONST INT g_SIZE = 256;
 
-CONST COLORREF g_WINDOW_BACKGROUND[] =		{RGB(0, 0, 200), RGB(200, 200, 200)};
-CONST COLORREF g_DISPLAY_BACKGROUND[] =		{RGB(0, 0, 100), RGB(50, 50, 50)};
-CONST COLORREF g_DISPLAY_FOREGROUND[] =		{RGB(255, 0, 0), RGB(0, 255, 0)};
+CONST COLORREF g_WINDOW_BACKGROUND[] = { RGB(0, 0, 200), RGB(200, 200, 200) };
+CONST COLORREF g_DISPLAY_BACKGROUND[] = { RGB(0, 0, 100), RGB(50, 50, 50) };
+CONST COLORREF g_DISPLAY_FOREGROUND[] = { RGB(255, 0, 0), RGB(0, 255, 0) };
 
-CONST CHAR* g_sz_SKIN[] =					{ "square_blue", "metal_mistral"};
+CONST CHAR* g_sz_SKIN[] = { "square_blue", "metal_mistral" };
 
-CONST CHAR* g_sz_FONT[] = { "Digital-7 mono", "Tristan DEMO", "Terminator Two" ,"Astronaut III" };
+
+CONST CHAR* g_sz_FONT[] = { "Digital-7 mono", "Tristan DEMO", "Astronaut III", "Terminator Two"};
+
 
