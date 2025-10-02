@@ -7,7 +7,6 @@
 #include "Constants.h"
 #include <sal.h>
 
-// Функции логирования
 VOID LogMessage(const CHAR* format, ...)
 {
     va_list args;
@@ -54,7 +53,7 @@ VOID SetSkinFromDLL(HWND hwnd, CONST CHAR sz_skin[]);
 VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID);
 VOID LoadFontsFromDLL(HMODULE hFontModule);
 VOID SetFont(HWND hwnd, CONST CHAR font_name[]);
-VOID UpdateWindowColors(HWND hwnd, INT new_index); // Новая функция для обновления цветов
+VOID UpdateWindowColors(HWND hwnd, INT new_index); 
 
 int WINAPI WinMain(
     _In_ HINSTANCE hInstance,
@@ -123,14 +122,11 @@ int WINAPI WinMain(
     return msg.wParam;
 }
 
-// Новая функция для обновления цветов окна
 VOID UpdateWindowColors(HWND hwnd, INT new_index)
 {
-    // Обновляем фон окна
     HBRUSH hbrBackground = CreateSolidBrush(g_WINDOW_BACKGROUND[new_index]);
     SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hbrBackground);
 
-    // Принудительная перерисовка всего окна
     InvalidateRect(hwnd, NULL, TRUE);
     UpdateWindow(hwnd);
 }
@@ -146,7 +142,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     static INT index = 0;
     static INT font_index = 0;
 
-    // Статические переменные для кистей
     static HBRUSH hbrEditBackground = NULL;
     static HBRUSH hbrWindowBackground = NULL;
 
@@ -165,11 +160,10 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         system("CHCP 1251");
 
-        // Создание дисплея
         LogMessage("Creating display...");
         HWND hEditDisplay = CreateWindowEx(
             NULL, "Edit", "0",
-            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT | ES_NOHIDESEL, // Убрал ES_READONLY
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT | ES_NOHIDESEL, 
             g_i_BUTTON_START_X, g_i_START_Y,
             g_i_DISPLAY_WIDTH, g_i_DISPLAY_HEIGHT,
             hwnd,
@@ -189,7 +183,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             LogMessage("Display edit control created successfully");
         }
 
-        // Создание кнопок 1-9
         LogMessage("Creating digit buttons 1-9...");
         INT iDigit = IDC_BUTTON_1;
         CHAR szDigit[2] = {};
@@ -224,7 +217,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
         }
 
-        // Создание кнопки 0
         LogMessage("Creating button 0...");
         HWND hButton0 = CreateWindowEx(
             NULL, "Button", "0",
@@ -248,7 +240,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             LogMessage("Button 0 created successfully");
         }
 
-        // Создание кнопки точки
         LogMessage("Creating button point...");
         HWND hButtonPoint = CreateWindowEx(
             NULL, "Button", ".",
@@ -273,7 +264,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             LogMessage("Button point created successfully");
         }
 
-        // Создание кнопок операций
         LogMessage("Creating operation buttons...");
         for (int i = 0; i < 4; i++)
         {
@@ -301,7 +291,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
         }
 
-        // Создание кнопок редактирования
         LogMessage("Creating edit buttons...");
         for (int i = 0; i < 3; i++)
         {
@@ -331,7 +320,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         LogMessage("Window creation completed");
 
-        // Сначала устанавливаем скин, потом шрифты
         SetSkinFromDLL(hwnd, "square_blue");
 
         HMODULE hFonts = LoadLibraryA("Fonts.DLL");
@@ -346,7 +334,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             SetFont(hwnd, "Arial");
         }
 
-        // Инициализируем цвета
         UpdateWindowColors(hwnd, index);
     }
     break;
@@ -355,10 +342,9 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         HDC hdcEdit = (HDC)wParam;
         SetBkMode(hdcEdit, OPAQUE);
-        SetTextColor(hdcEdit, g_DISPLAY_FOREGROUND[index]); // Исправлено: теперь цвет применяется
+        SetTextColor(hdcEdit, g_DISPLAY_FOREGROUND[index]); 
         SetBkColor(hdcEdit, g_DISPLAY_BACKGROUND[index]);
 
-        // Освобождаем старую кисть, если она существует
         if (hbrEditBackground != NULL)
         {
             DeleteObject(hbrEditBackground);
@@ -371,7 +357,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_CTLCOLORBTN:
     {
-        // Обработка цвета для кнопок
         HDC hdcButton = (HDC)wParam;
         SetBkColor(hdcButton, g_WINDOW_BACKGROUND[index]);
 
@@ -386,7 +371,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_ERASEBKGND:
     {
-        // Обработка фона окна
         HDC hdc = (HDC)wParam;
         RECT rect;
         GetClientRect(hwnd, &rect);
@@ -610,19 +594,19 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             break;
         case CM_SQUARE_BLUE:
             SetSkinFromDLL(hwnd, "square_blue");
-            index = 0; // Устанавливаем индекс темы
+            index = 0; 
             UpdateWindowColors(hwnd, index);
             break;
         case CM_METAL_MISTRAL:
             SetSkinFromDLL(hwnd, "metal_mistral");
-            index = 1; // Устанавливаем индекс темы
+            index = 1; 
             UpdateWindowColors(hwnd, index);
             break;
         default:
-            // Обработка выбора шрифта
+            
             if (item >= 301 && item <= 304)
             {
-                font_index = item - 301; // Исправлено: правильный расчет индекса
+                font_index = item - 301; 
                 SetFont(hwnd, g_sz_FONT[font_index]);
             }
             break;
@@ -633,7 +617,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     break;
 
     case WM_DESTROY:
-        // Освобождаем ресурсы
+        
         if (hbrEditBackground != NULL)
         {
             DeleteObject(hbrEditBackground);
@@ -768,7 +752,7 @@ VOID SetSkinFromDLL(HWND hwnd, CONST CHAR sz_skin[])
         }
     }
 
-    // Не освобождаем библиотеку здесь, если битмапы используются
+    
 }
 
 VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID)
@@ -814,7 +798,7 @@ VOID SetFont(HWND hwnd, CONST CHAR font_name[])
 {
     HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
 
-    // Сначала удаляем старый шрифт, если он есть
+    
     HFONT hOldFont = (HFONT)SendMessage(hEditDisplay, WM_GETFONT, 0, 0);
     if (hOldFont != NULL)
     {
@@ -841,7 +825,7 @@ VOID SetFont(HWND hwnd, CONST CHAR font_name[])
         SendMessage(hEditDisplay, WM_SETFONT, (WPARAM)hFont, TRUE);
         LogMessage("Font set to: %s", font_name);
 
-        // Принудительная перерисовка для обновления цвета текста
+       
         InvalidateRect(hEditDisplay, NULL, TRUE);
         UpdateWindow(hEditDisplay);
     }
