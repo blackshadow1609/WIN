@@ -97,23 +97,7 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
-		/*AddFontResourceEx("Fonts\\digital-7 (mono).ttf", FR_PRIVATE, 0);
-		HFONT hFont = CreateFont
-		(
-			g_i_DISPLAY_HEIGHT - 2, g_i_DISPLAY_HEIGHT / 3,
-			0,
-			0,
-			FW_BOLD,
-			FALSE, FALSE, FALSE,
-			DEFAULT_CHARSET,
-			OUT_TT_PRECIS,
-			CLIP_DEFAULT_PRECIS,
-			ANTIALIASED_QUALITY,
-			FF_DONTCARE,
-			"digital-7 mono"
-		);
-		SendMessage(hEditDisplay, WM_SETFONT, (WPARAM)hFont, TRUE);*/
-
+	
 		INT iDigit = IDC_BUTTON_1;
 		CHAR szDigit[2] = {};
 		for (int i = 6; i >= 0; i -= 3)
@@ -193,7 +177,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		HICON hIcon = (HICON)LoadImage(GetModuleHandle(NULL), "BMP\\0.bmp", IMAGE_BITMAP, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
 
-		//SetSkin(hwnd, "metal_mistral");
 		SetSkinFromDLL(hwnd, "square_blue");
 		HMODULE hFonts = LoadLibrary("Fonts.DLL");
 		LoadFontsFromDLL(hFonts);
@@ -279,7 +262,6 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			sprintf(szDisplay, "%g", a);
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)szDisplay);
 		}
-		//if (LOWORD(wParam) == IDC_EDIT_DISPLAY && HIWORD(wParam) == EN_SETFOCUS)
 		SetFocus(hwnd);
 
 	}
@@ -398,7 +380,11 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
 		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_STRING, CM_SQUARE_BLUE, "Square Blue");
 		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_STRING, CM_METAL_MISTRAL, "Metal Mistral");
-
+		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
+		for (INT i = 0; i <= 4; i++)
+		{
+			InsertMenu(hMainMenu, i, MF_BYPOSITION | MF_STRING, i + 300, g_sz_FONT[i]);
+		}
 		BOOL item = TrackPopupMenuEx
 		(
 			hMainMenu, 
@@ -415,13 +401,11 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case CM_SQUARE_BLUE:	SetSkinFromDLL(hwnd, "square_blue");	break;
 		case CM_METAL_MISTRAL:	SetSkinFromDLL(hwnd, "metal_mistral");	break;
 		}
-
 		DestroyMenu(hMainMenu);
 
 		if (item >= 201 && item <= 210)
 		{
 			index = item - CM_EXIT - 1;
-			//SetSkin(hwnd, g_sz_SKIN[index]);
 			SetSkinFromDLL(hwnd, g_sz_SKIN[index]);
 
 			HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
@@ -430,11 +414,13 @@ INT WINAPI WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			ReleaseDC(hEditDisplay, hdcEditDisplay);
 
 			CHAR sz_buffer[g_SIZE] = {};
-			//sprintf(sz_buffer, "%i", item);
 			SendMessage(hwnd, WM_GETTEXT, g_SIZE, (LPARAM)sz_buffer);
 			SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)sz_buffer);
-			//SetFocus(hEditDisplay);
-
+		}
+		if (item >= 301 && item <= 304)
+		{
+			font_index = item - 300 - 1;
+			SetFont(hwnd, g_sz_FONT[font_index]);
 		}
 	}
 	break;
@@ -509,7 +495,6 @@ VOID SetSkin(HWND hwnd, CONST CHAR sz_skin[])
 VOID SetSkinFromDLL(HWND hwnd, CONST CHAR sz_skin[])
 {
 	HMODULE hButtonsModule = LoadLibrary(sz_skin);
-	//HINSTANCE hButtons = GetModuleHandle("Buttons.dll");
 	for (int i = IDC_BUTTON_0; i <= IDC_BUTTON_EQUAL; i++)
 	{
 		HBITMAP bmpButton = (HBITMAP)LoadImage
@@ -545,7 +530,6 @@ VOID LoadFontsFromDLL(HMODULE hFontModule)
 VOID SetFont(HWND hwnd, CONST CHAR font_name[])
 {
 	HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
-	//AddFontResourceEx("Fonts\\digital-7 (mono).ttf", FR_PRIVATE, 0);
 	HFONT hFont = CreateFont
 	(
 		g_i_DISPLAY_HEIGHT - 2, g_i_DISPLAY_HEIGHT / 3,
